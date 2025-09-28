@@ -86,7 +86,9 @@ async function build() {
                 'global': 'globalThis'
             },
             external: [],
-            mainFields: ['browser', 'module', 'main']
+            mainFields: ['browser', 'module', 'main'],
+            conditions: ['import', 'module', 'browser', 'default'],
+            resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json']
         });
 
         const jsCode = result.outputFiles[0].text;
@@ -121,6 +123,8 @@ if (isWatch) {
         },
         external: [],
         mainFields: ['browser', 'module', 'main'],
+        conditions: ['import', 'module', 'browser', 'default'],
+        resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
         watch: {
             onRebuild(error, result) {
                 clearTimeout(timeout);
