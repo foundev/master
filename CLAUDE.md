@@ -49,3 +49,4 @@ A React-based mastery-focused goal tracking application with time tracking funct
 - Jest with jsdom environment
 - Test setup in `src/setupTests.ts`
 - Tests located in `src/__tests__/` and `*.test.ts` files
+- **IMPORTANT**: Always run `npm test` after making code changes to ensure tests pass
