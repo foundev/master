@@ -75,7 +75,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, sessions, onStart, onS
             Start Timer
           </button>
         )}
-        <button onClick={() => setShowAddTimeModal(true)} className="outline">
+        <button id="add-time-button" onClick={() => setShowAddTimeModal(true)} className="outline">
           Add Time
         </button>
         <button onClick={() => setShowProgressModal(true)} className="outline">

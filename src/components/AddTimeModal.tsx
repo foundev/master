@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { Modal } from './Modal';
+import { TimeSession } from '../types';
+import { validateDailyTimeLimit } from '../utils/time';
+import { storage } from '../utils/storage';
 
 interface AddTimeModalProps {
   isOpen: boolean;
@@ -16,22 +19,39 @@ export const AddTimeModal: React.FC<AddTimeModalProps> = ({
 }) => {
   const [manualHours, setManualHours] = useState('');
   const [manualDate, setManualDate] = useState('');
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setValidationError(null);
+
     const hours = parseFloat(manualHours);
-    if (!isNaN(hours) && hours > 0) {
-      const selectedDate = manualDate ? new Date(manualDate) : undefined;
-      onAddTime(hours, selectedDate);
-      setManualHours('');
-      setManualDate('');
-      onClose();
+    if (isNaN(hours) || hours <= 0) {
+      setValidationError('Please enter a valid number of hours greater than 0');
+      return;
     }
+
+    const targetDate = manualDate ? new Date(manualDate) : new Date();
+    // Get ALL sessions from storage for accurate validation across all projects and dates
+    const allSessions = storage.getSessions();
+    const validation = validateDailyTimeLimit(allSessions, hours, targetDate);
+
+    if (!validation.isValid) {
+      setValidationError(validation.message || 'Time limit exceeded');
+      return;
+    }
+
+    onAddTime(hours, manualDate ? new Date(manualDate) : undefined);
+    setManualHours('');
+    setManualDate('');
+    setValidationError(null);
+    onClose();
   };
 
   const handleClose = () => {
     setManualHours('');
     setManualDate('');
+    setValidationError(null);
     onClose();
   };
 
@@ -42,15 +62,45 @@ export const AddTimeModal: React.FC<AddTimeModalProps> = ({
       title={`Add Time: ${goalTitle}`}
     >
       <form onSubmit={handleSubmit}>
+        {validationError && (
+          <>
+            <style>
+              {`
+                @keyframes shake {
+                  0%, 100% { transform: translateX(0); }
+                  25% { transform: translateX(-5px); }
+                  75% { transform: translateX(5px); }
+                }
+              `}
+            </style>
+            <div style={{
+              color: '#d32f2f',
+              marginBottom: '1rem',
+              padding: '1rem',
+              border: '2px solid #f44336',
+              borderRadius: '8px',
+              backgroundColor: '#ffebee',
+              fontSize: '0.95rem',
+              fontWeight: '500',
+              boxShadow: '0 2px 4px rgba(244, 67, 54, 0.1)',
+              animation: 'shake 0.5s ease-in-out'
+            }}>
+              <strong>⚠️ Daily Time Limit Exceeded</strong><br />
+              {validationError}
+            </div>
+          </>
+        )}
+
         <div>
           <label htmlFor="hours">Hours to add:</label>
           <input
             id="hours"
             type="number"
-            placeholder="e.g., 2.5"
+            placeholder="Hours to add"
             value={manualHours}
             onChange={(e) => setManualHours(e.target.value)}
             min="0.1"
+            max="24"
             step="0.1"
             required
             autoFocus
@@ -62,6 +112,7 @@ export const AddTimeModal: React.FC<AddTimeModalProps> = ({
           <input
             id="date"
             type="date"
+            placeholder="Date (optional)"
             value={manualDate}
             onChange={(e) => setManualDate(e.target.value)}
             max={new Date().toISOString().split('T')[0]}
@@ -78,6 +129,7 @@ export const AddTimeModal: React.FC<AddTimeModalProps> = ({
             Cancel
           </button>
           <button
+            id="submit-time-button"
             type="submit"
             disabled={!manualHours || parseFloat(manualHours) <= 0}
           >

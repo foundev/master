@@ -60,3 +60,32 @@ export const calculateEstimatedCompletion = (goal: Goal, sessions: TimeSession[]
 
   return completionDate;
 };
+
+export const validateDailyTimeLimit = (sessions: TimeSession[], newHours: number, targetDate: Date): { isValid: boolean; currentHours: number; message?: string } => {
+  const targetDateString = targetDate.toDateString();
+
+  // Get ALL sessions for the target date across ALL projects
+  const dailySessions = sessions.filter(session => {
+    const sessionDate = new Date(session.startTime).toDateString();
+    return sessionDate === targetDateString;
+  });
+
+  const currentDailyHours = dailySessions.reduce((total, session) => {
+    return total + (session.duration / (1000 * 60 * 60));
+  }, 0);
+
+  const totalHours = currentDailyHours + newHours;
+
+  if (totalHours > 24) {
+    const projectCount = new Set(dailySessions.map(s => s.goalId)).size;
+    const projectText = projectCount > 1 ? `across ${projectCount} projects` : 'for this project';
+
+    return {
+      isValid: false,
+      currentHours: currentDailyHours,
+      message: `Adding ${newHours} hours would exceed the 24-hour daily limit for ${targetDateString}. You already have ${currentDailyHours.toFixed(1)} hours logged ${projectText}.`
+    };
+  }
+
+  return { isValid: true, currentHours: currentDailyHours };
+};

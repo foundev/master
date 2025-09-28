@@ -66,7 +66,7 @@ describe('Integration: Manual time with custom dates', () => {
     expect(screen.getByText(/Remaining: 5\.0 hours/)).toBeInTheDocument();
 
     // Add manual time with a custom date
-    fireEvent.click(screen.getByText('Add Time'));
+    fireEvent.click(document.getElementById('add-time-button')!);
 
     const hoursInput = screen.getByPlaceholderText('Hours to add');
     const dateInput = screen.getByPlaceholderText('Date (optional)');
@@ -75,7 +75,7 @@ describe('Integration: Manual time with custom dates', () => {
     fireEvent.change(dateInput, { target: { value: '2024-01-08' } }); // Even older date
 
     act(() => {
-      fireEvent.click(screen.getByText('Add Time'));
+      fireEvent.click(document.getElementById('submit-time-button')!);
     });
 
     // Verify the session was added with correct date
@@ -109,7 +109,7 @@ describe('Integration: Manual time with custom dates', () => {
     render(<App />);
 
     // Add manual time without specifying a date
-    fireEvent.click(screen.getByText('Add Time'));
+    fireEvent.click(document.getElementById('add-time-button')!);
 
     const hoursInput = screen.getByPlaceholderText('Hours to add');
     fireEvent.change(hoursInput, { target: { value: '1.5' } });
@@ -117,7 +117,7 @@ describe('Integration: Manual time with custom dates', () => {
     const currentTime = Date.now();
 
     act(() => {
-      fireEvent.click(screen.getByText('Add Time'));
+      fireEvent.click(document.getElementById('submit-time-button')!);
     });
 
     // Should use current time when no date is specified
@@ -166,7 +166,7 @@ describe('Integration: Manual time with custom dates', () => {
     });
 
     // Add manual time for a past date
-    fireEvent.click(screen.getByText('Add Time'));
+    fireEvent.click(document.getElementById('add-time-button')!);
 
     const hoursInput = screen.getByPlaceholderText('Hours to add');
     const dateInput = screen.getByPlaceholderText('Date (optional)');
@@ -175,7 +175,7 @@ describe('Integration: Manual time with custom dates', () => {
     fireEvent.change(dateInput, { target: { value: '2024-01-05' } });
 
     act(() => {
-      fireEvent.click(screen.getByText('Add Time'));
+      fireEvent.click(document.getElementById('submit-time-button')!);
     });
 
     // Should show total of 4 hours (1 from timer + 3 manual)
@@ -204,7 +204,7 @@ describe('Integration: Manual time with custom dates', () => {
     render(<App />);
 
     // Add time using today's date explicitly
-    fireEvent.click(screen.getByText('Add Time'));
+    fireEvent.click(document.getElementById('add-time-button')!);
 
     const hoursInput = screen.getByPlaceholderText('Hours to add');
     const dateInput = screen.getByPlaceholderText('Date (optional)');
@@ -213,7 +213,7 @@ describe('Integration: Manual time with custom dates', () => {
     fireEvent.change(dateInput, { target: { value: '2024-01-15' } }); // Today's date
 
     act(() => {
-      fireEvent.click(screen.getByText('Add Time'));
+      fireEvent.click(document.getElementById('submit-time-button')!);
     });
 
     // Should create session for today
@@ -244,7 +244,7 @@ describe('Integration: Manual time with custom dates', () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByText('Add Time'));
+    fireEvent.click(document.getElementById('add-time-button')!);
 
     const dateInput = screen.getByPlaceholderText('Date (optional)');
 

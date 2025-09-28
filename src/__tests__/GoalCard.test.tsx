@@ -12,6 +12,7 @@ jest.mock('../hooks/useTimer', () => ({
 jest.mock('../utils/time', () => ({
   formatDuration: jest.fn((ms) => `${Math.floor(ms / 1000)}s`),
   calculateEstimatedCompletion: jest.fn(),
+  validateDailyTimeLimit: jest.fn(() => ({ isValid: true, currentHours: 0 })),
 }));
 
 const mockUseTimer = require('../hooks/useTimer').useTimer as jest.MockedFunction<typeof import('../hooks/useTimer').useTimer>;
@@ -177,13 +178,13 @@ describe('GoalCard', () => {
   it('should show Add Time button', () => {
     render(<GoalCard {...mockProps} />);
 
-    expect(screen.getByText('Add Time')).toBeInTheDocument();
+    expect(document.getElementById('add-time-button')).toBeInTheDocument();
   });
 
   it('should show manual time entry form when Add Time is clicked', () => {
     render(<GoalCard {...mockProps} />);
 
-    fireEvent.click(screen.getByText('Add Time'));
+    fireEvent.click(document.getElementById('add-time-button')!);
 
     expect(screen.getByPlaceholderText('Hours to add')).toBeInTheDocument();
     expect(screen.getByText('Cancel')).toBeInTheDocument();
@@ -192,7 +193,7 @@ describe('GoalCard', () => {
   it('should hide manual time entry form when Cancel is clicked', () => {
     render(<GoalCard {...mockProps} />);
 
-    fireEvent.click(screen.getByText('Add Time'));
+    fireEvent.click(document.getElementById('add-time-button')!);
     expect(screen.getByPlaceholderText('Hours to add')).toBeInTheDocument();
 
     fireEvent.click(screen.getByText('Cancel'));
@@ -202,12 +203,12 @@ describe('GoalCard', () => {
   it('should call onAddManualTime when manual time form is submitted', () => {
     render(<GoalCard {...mockProps} />);
 
-    fireEvent.click(screen.getByText('Add Time'));
+    fireEvent.click(document.getElementById('add-time-button')!);
 
     const input = screen.getByPlaceholderText('Hours to add');
     fireEvent.change(input, { target: { value: '2.5' } });
 
-    const submitButton = screen.getByText('Add Time');
+    const submitButton = document.getElementById('submit-time-button')!;
     fireEvent.click(submitButton);
 
     expect(mockProps.onAddManualTime).toHaveBeenCalledWith(2.5, undefined);
@@ -216,12 +217,12 @@ describe('GoalCard', () => {
   it('should clear form and hide it after successful submission', () => {
     render(<GoalCard {...mockProps} />);
 
-    fireEvent.click(screen.getByText('Add Time'));
+    fireEvent.click(document.getElementById('add-time-button')!);
 
     const input = screen.getByPlaceholderText('Hours to add');
     fireEvent.change(input, { target: { value: '1' } });
 
-    const submitButton = screen.getByText('Add Time');
+    const submitButton = document.getElementById('submit-time-button')!;
     fireEvent.click(submitButton);
 
     expect(screen.queryByPlaceholderText('Hours to add')).not.toBeInTheDocument();
@@ -230,21 +231,21 @@ describe('GoalCard', () => {
   it('should disable submit button when no hours entered', () => {
     render(<GoalCard {...mockProps} />);
 
-    fireEvent.click(screen.getByText('Add Time'));
+    fireEvent.click(document.getElementById('add-time-button')!);
 
-    const submitButton = screen.getByText('Add Time');
+    const submitButton = document.getElementById('submit-time-button')!;
     expect(submitButton).toBeDisabled();
   });
 
   it('should disable submit button when invalid hours entered', () => {
     render(<GoalCard {...mockProps} />);
 
-    fireEvent.click(screen.getByText('Add Time'));
+    fireEvent.click(document.getElementById('add-time-button')!);
 
     const input = screen.getByPlaceholderText('Hours to add');
     fireEvent.change(input, { target: { value: '0' } });
 
-    const submitButton = screen.getByText('Add Time');
+    const submitButton = document.getElementById('submit-time-button')!;
     expect(submitButton).toBeDisabled();
   });
 
@@ -252,7 +253,7 @@ describe('GoalCard', () => {
     it('should show date input when manual entry form is open', () => {
       render(<GoalCard {...mockProps} />);
 
-      fireEvent.click(screen.getByText('Add Time'));
+      fireEvent.click(document.getElementById('add-time-button')!);
 
       expect(screen.getByPlaceholderText('Date (optional)')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Hours to add')).toBeInTheDocument();
@@ -261,7 +262,7 @@ describe('GoalCard', () => {
     it('should call onAddManualTime with custom date when provided', () => {
       render(<GoalCard {...mockProps} />);
 
-      fireEvent.click(screen.getByText('Add Time'));
+      fireEvent.click(document.getElementById('add-time-button')!);
 
       const hoursInput = screen.getByPlaceholderText('Hours to add');
       const dateInput = screen.getByPlaceholderText('Date (optional)');
@@ -269,7 +270,7 @@ describe('GoalCard', () => {
       fireEvent.change(hoursInput, { target: { value: '1.5' } });
       fireEvent.change(dateInput, { target: { value: '2024-01-15' } });
 
-      const submitButton = screen.getByText('Add Time');
+      const submitButton = document.getElementById('submit-time-button')!;
       fireEvent.click(submitButton);
 
       expect(mockProps.onAddManualTime).toHaveBeenCalledWith(1.5, new Date('2024-01-15'));
@@ -278,12 +279,12 @@ describe('GoalCard', () => {
     it('should call onAddManualTime with undefined date when no date provided', () => {
       render(<GoalCard {...mockProps} />);
 
-      fireEvent.click(screen.getByText('Add Time'));
+      fireEvent.click(document.getElementById('add-time-button')!);
 
       const hoursInput = screen.getByPlaceholderText('Hours to add');
       fireEvent.change(hoursInput, { target: { value: '2' } });
 
-      const submitButton = screen.getByText('Add Time');
+      const submitButton = document.getElementById('submit-time-button')!;
       fireEvent.click(submitButton);
 
       expect(mockProps.onAddManualTime).toHaveBeenCalledWith(2, undefined);
@@ -292,7 +293,7 @@ describe('GoalCard', () => {
     it('should clear both hours and date inputs after successful submission', () => {
       render(<GoalCard {...mockProps} />);
 
-      fireEvent.click(screen.getByText('Add Time'));
+      fireEvent.click(document.getElementById('add-time-button')!);
 
       const hoursInput = screen.getByPlaceholderText('Hours to add');
       const dateInput = screen.getByPlaceholderText('Date (optional)');
@@ -300,7 +301,7 @@ describe('GoalCard', () => {
       fireEvent.change(hoursInput, { target: { value: '3' } });
       fireEvent.change(dateInput, { target: { value: '2024-01-10' } });
 
-      const submitButton = screen.getByText('Add Time');
+      const submitButton = document.getElementById('submit-time-button')!;
       fireEvent.click(submitButton);
 
       // Form should be hidden after submission
@@ -312,7 +313,7 @@ describe('GoalCard', () => {
       const today = new Date().toISOString().split('T')[0];
       render(<GoalCard {...mockProps} />);
 
-      fireEvent.click(screen.getByText('Add Time'));
+      fireEvent.click(document.getElementById('add-time-button')!);
 
       const dateInput = screen.getByPlaceholderText('Date (optional)');
       expect(dateInput).toHaveAttribute('max', today);
@@ -321,7 +322,7 @@ describe('GoalCard', () => {
     it('should handle empty date input as undefined', () => {
       render(<GoalCard {...mockProps} />);
 
-      fireEvent.click(screen.getByText('Add Time'));
+      fireEvent.click(document.getElementById('add-time-button')!);
 
       const hoursInput = screen.getByPlaceholderText('Hours to add');
       const dateInput = screen.getByPlaceholderText('Date (optional)');
@@ -330,7 +331,7 @@ describe('GoalCard', () => {
       fireEvent.change(dateInput, { target: { value: '2024-01-15' } });
       fireEvent.change(dateInput, { target: { value: '' } }); // Clear date
 
-      const submitButton = screen.getByText('Add Time');
+      const submitButton = document.getElementById('submit-time-button')!;
       fireEvent.click(submitButton);
 
       expect(mockProps.onAddManualTime).toHaveBeenCalledWith(1, undefined);
