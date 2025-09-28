@@ -6,7 +6,7 @@ import { TimeSession } from './types';
 import { storage } from './utils/storage';
 
 const App: React.FC = () => {
-  const { goals, addGoal, deleteGoal, startTimer, stopTimer } = useGoals();
+  const { goals, addGoal, deleteGoal, startTimer, stopTimer, addManualTime } = useGoals();
   const [sessions, setSessions] = useState<TimeSession[]>([]);
 
   useEffect(() => {
@@ -32,6 +32,7 @@ const App: React.FC = () => {
           onStartTimer={startTimer}
           onStopTimer={stopTimer}
           onDeleteGoal={deleteGoal}
+          onAddManualTime={addManualTime}
         />
       </section>
     </main>

@@ -91,6 +91,28 @@ export const useGoals = () => {
     setActiveTimer(null);
   }, [goals, saveGoals, activeTimer]);
 
+  const addManualTime = useCallback((goalId: string, hours: number) => {
+    const duration = hours * 60 * 60 * 1000;
+    const now = Date.now();
+
+    const session: TimeSession = {
+      goalId,
+      startTime: now - duration,
+      endTime: now,
+      duration,
+    };
+
+    storage.addSession(session);
+
+    const updatedGoals = goals.map(goal =>
+      goal.id === goalId
+        ? { ...goal, totalTimeSpent: goal.totalTimeSpent + duration }
+        : goal
+    );
+
+    saveGoals(updatedGoals);
+  }, [goals, saveGoals]);
+
   return {
     goals,
     activeTimer,
@@ -98,5 +120,6 @@ export const useGoals = () => {
     deleteGoal,
     startTimer,
     stopTimer,
+    addManualTime,
   };
 };
