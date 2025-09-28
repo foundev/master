@@ -1,7 +1,7 @@
 {
-  "name": "goal-tracker",
+  "name": "mastery",
   "version": "1.0.0",
-  "description": "A goal tracking application with time tracking functionality",
+  "description": "A mastery-focused goal tracking application with time tracking functionality",
   "main": "dist/index.html",
   "scripts": {
     "build": "node build.js",

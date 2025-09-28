@@ -1,6 +1,6 @@
-# Goal Tracker
+# Mastery
 
-A simple, elegant goal tracking application with built-in time tracking functionality. Create goals, track time spent working on them, and monitor your progress over time.
+A simple, elegant mastery-focused goal tracking application with built-in time tracking functionality. Create goals, track time spent working on them, and monitor your progress toward mastery.
 
 ## Features
 

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A React-based goal tracking application with time tracking functionality. Users can create goals, start/stop timers, and track total time spent on each goal. Built with TypeScript, React 18, and uses local storage for persistence.
+A React-based mastery-focused goal tracking application with time tracking functionality. Users can create goals, start/stop timers, and track total time spent on each goal. Built with TypeScript, React 18, and uses local storage for persistence.
 
 ## Commands
 
