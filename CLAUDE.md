@@ -16,6 +16,10 @@ A React-based mastery-focused goal tracking application with comprehensive time 
 - `npm test` - Run all tests with Jest
 - `npm run test:watch` - Run tests in watch mode
 
+### Viewing Results
+- **Development**: `npm run dev` then open `dist/index.html` file directly in browser (rebuilds on file changes)
+- **Production**: `npm run build` then open `dist/index.html` file directly in browser
+
 ## Architecture
 
 ### Build System

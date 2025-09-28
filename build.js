@@ -124,44 +124,60 @@ async function build() {
 
 if (isWatch) {
     console.log('Watching for changes...');
-    let timeout;
-    esbuild.build({
-        entryPoints: ['src/index.tsx'],
-        bundle: true,
-        sourcemap: true,
-        target: 'es2020',
-        format: 'iife',
-        write: false,
-        jsx: 'automatic',
-        loader: {
-            '.tsx': 'tsx',
-            '.ts': 'ts'
-        },
-        define: {
-            'process.env.NODE_ENV': '"development"',
-            'global': 'globalThis'
-        },
-        external: [],
-        mainFields: ['browser', 'module', 'main'],
-        conditions: ['import', 'module', 'browser', 'default'],
-        resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
-        watch: {
-            onRebuild(error, result) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    if (error) {
-                        console.error('Watch build failed:', error);
-                    } else {
-                        const jsCode = result.outputFiles[0].text;
-                        const finalHtml = htmlTemplate.replace('__BUNDLE__', jsCode);
-                        fs.writeFileSync('dist/index.html', finalHtml);
-                        console.log('Rebuilt at', new Date().toLocaleTimeString());
-                    }
-                }, 100);
-            }
-        }
-    }).then(() => {
+
+    async function startWatch() {
+        const context = await esbuild.context({
+            entryPoints: ['src/index.tsx'],
+            bundle: true,
+            sourcemap: true,
+            target: 'es2020',
+            format: 'iife',
+            write: false,
+            jsx: 'automatic',
+            loader: {
+                '.tsx': 'tsx',
+                '.ts': 'ts'
+            },
+            define: {
+                'process.env.NODE_ENV': '"development"',
+                'global': 'globalThis'
+            },
+            external: [],
+            mainFields: ['browser', 'module', 'main'],
+            conditions: ['import', 'module', 'browser', 'default'],
+            resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
+            plugins: [{
+                name: 'rebuild-notify',
+                setup(build) {
+                    build.onEnd(result => {
+                        if (result.errors.length === 0) {
+                            const jsCode = result.outputFiles[0].text;
+                            const finalHtml = htmlTemplate.replace('__BUNDLE__', jsCode);
+                            fs.writeFileSync('dist/index.html', finalHtml);
+                            console.log('Rebuilt at', new Date().toLocaleTimeString());
+                        } else {
+                            console.error('Watch build failed:', result.errors);
+                        }
+                    });
+                }
+            }]
+        });
+
+        await context.watch();
+
+        // Initial build
         build();
+
+        // Keep process alive
+        process.on('SIGINT', () => {
+            context.dispose();
+            process.exit(0);
+        });
+    }
+
+    startWatch().catch(error => {
+        console.error('Watch setup failed:', error);
+        process.exit(1);
     });
 } else {
     build();
