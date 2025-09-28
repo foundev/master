@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGoals } from './hooks/useGoals';
 import { GoalForm } from './components/GoalForm';
 import { GoalList } from './components/GoalList';
+import { TimeSession } from './types';
+import { storage } from './utils/storage';
 
 const App: React.FC = () => {
   const { goals, addGoal, deleteGoal, startTimer, stopTimer } = useGoals();
+  const [sessions, setSessions] = useState<TimeSession[]>([]);
+
+  useEffect(() => {
+    const loadedSessions = storage.getSessions();
+    setSessions(loadedSessions);
+  }, [goals]);
 
   return (
     <main className="container">
@@ -20,6 +28,7 @@ const App: React.FC = () => {
       <section>
         <GoalList
           goals={goals}
+          sessions={sessions}
           onStartTimer={startTimer}
           onStopTimer={stopTimer}
           onDeleteGoal={deleteGoal}

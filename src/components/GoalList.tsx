@@ -1,9 +1,10 @@
 import React from 'react';
-import { Goal } from '../types';
+import { Goal, TimeSession } from '../types';
 import { GoalCard } from './GoalCard';
 
 interface GoalListProps {
   goals: Goal[];
+  sessions: TimeSession[];
   onStartTimer: (goalId: string) => void;
   onStopTimer: () => void;
   onDeleteGoal: (goalId: string) => void;
@@ -11,6 +12,7 @@ interface GoalListProps {
 
 export const GoalList: React.FC<GoalListProps> = ({
   goals,
+  sessions,
   onStartTimer,
   onStopTimer,
   onDeleteGoal,
@@ -30,6 +32,7 @@ export const GoalList: React.FC<GoalListProps> = ({
         <GoalCard
           key={goal.id}
           goal={goal}
+          sessions={sessions}
           onStart={() => onStartTimer(goal.id)}
           onStop={onStopTimer}
           onDelete={() => onDeleteGoal(goal.id)}

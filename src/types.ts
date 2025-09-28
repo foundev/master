@@ -2,6 +2,7 @@ export interface Goal {
   id: string;
   title: string;
   description: string;
+  totalHours: number;
   totalTimeSpent: number;
   isActive: boolean;
   startTime?: number;

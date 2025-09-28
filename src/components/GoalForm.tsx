@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
 
 interface GoalFormProps {
-  onSubmit: (title: string, description: string) => void;
+  onSubmit: (title: string, description: string, totalHours: number) => void;
 }
 
 export const GoalForm: React.FC<GoalFormProps> = ({ onSubmit }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [totalHours, setTotalHours] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (title.trim()) {
-      onSubmit(title.trim(), description.trim());
+    const hours = parseFloat(totalHours);
+    if (title.trim() && !isNaN(hours) && hours > 0) {
+      onSubmit(title.trim(), description.trim(), hours);
       setTitle('');
       setDescription('');
+      setTotalHours('');
     }
   };
 
@@ -37,7 +40,18 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onSubmit }) => {
           rows={3}
         />
       </div>
-      <button type="submit" disabled={!title.trim()}>
+      <div>
+        <input
+          type="number"
+          placeholder="Total hours required"
+          value={totalHours}
+          onChange={(e) => setTotalHours(e.target.value)}
+          min="0.1"
+          step="0.1"
+          required
+        />
+      </div>
+      <button type="submit" disabled={!title.trim() || !totalHours || parseFloat(totalHours) <= 0}>
         Add Goal
       </button>
     </form>

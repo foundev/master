@@ -21,11 +21,12 @@ export const useGoals = () => {
     storage.saveGoals(updatedGoals);
   }, []);
 
-  const addGoal = useCallback((title: string, description: string) => {
+  const addGoal = useCallback((title: string, description: string, totalHours: number) => {
     const newGoal: Goal = {
       id: Date.now().toString(),
       title,
       description,
+      totalHours,
       totalTimeSpent: 0,
       isActive: false,
       createdAt: Date.now(),

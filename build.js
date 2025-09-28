@@ -37,6 +37,27 @@ const htmlTemplate = `<!DOCTYPE html>
         .controls button {
             flex: 1;
         }
+        .progress-info {
+            margin: 1rem 0;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: var(--muted-border-color);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+        .remaining-time, .estimated-completion {
+            color: var(--muted-color);
+            font-size: 0.8rem;
+            margin: 0.2rem 0;
+        }
     </style>
 </head>
 <body>
