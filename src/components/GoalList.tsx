@@ -8,7 +8,7 @@ interface GoalListProps {
   onStartTimer: (goalId: string) => void;
   onStopTimer: () => void;
   onDeleteGoal: (goalId: string) => void;
-  onAddManualTime: (goalId: string, hours: number) => void;
+  onAddManualTime: (goalId: string, hours: number, date?: Date) => void;
 }
 
 export const GoalList: React.FC<GoalListProps> = ({
@@ -38,7 +38,7 @@ export const GoalList: React.FC<GoalListProps> = ({
           onStart={() => onStartTimer(goal.id)}
           onStop={onStopTimer}
           onDelete={() => onDeleteGoal(goal.id)}
-          onAddManualTime={(hours) => onAddManualTime(goal.id, hours)}
+          onAddManualTime={(hours, date) => onAddManualTime(goal.id, hours, date)}
         />
       ))}
     </div>

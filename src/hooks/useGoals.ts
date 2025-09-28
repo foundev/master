@@ -91,14 +91,14 @@ export const useGoals = () => {
     setActiveTimer(null);
   }, [goals, saveGoals, activeTimer]);
 
-  const addManualTime = useCallback((goalId: string, hours: number) => {
+  const addManualTime = useCallback((goalId: string, hours: number, date?: Date) => {
     const duration = hours * 60 * 60 * 1000;
-    const now = Date.now();
+    const targetDate = date ? date.getTime() : Date.now();
 
     const session: TimeSession = {
       goalId,
-      startTime: now - duration,
-      endTime: now,
+      startTime: targetDate - duration,
+      endTime: targetDate,
       duration,
     };
 

@@ -82,8 +82,11 @@ async function build() {
                 '.ts': 'ts'
             },
             define: {
-                'process.env.NODE_ENV': isWatch ? '"development"' : '"production"'
-            }
+                'process.env.NODE_ENV': isWatch ? '"development"' : '"production"',
+                'global': 'globalThis'
+            },
+            external: [],
+            mainFields: ['browser', 'module', 'main']
         });
 
         const jsCode = result.outputFiles[0].text;
@@ -113,8 +116,11 @@ if (isWatch) {
             '.ts': 'ts'
         },
         define: {
-            'process.env.NODE_ENV': '"development"'
+            'process.env.NODE_ENV': '"development"',
+            'global': 'globalThis'
         },
+        external: [],
+        mainFields: ['browser', 'module', 'main'],
         watch: {
             onRebuild(error, result) {
                 clearTimeout(timeout);

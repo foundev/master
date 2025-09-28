@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Goal, TimeSession } from '../types';
 import { formatDuration, calculateEstimatedCompletion } from '../utils/time';
 import { useTimer } from '../hooks/useTimer';
+import { GoalProgressChart } from './GoalProgressChart';
 
 interface GoalCardProps {
   goal: Goal;
@@ -9,13 +10,15 @@ interface GoalCardProps {
   onStart: () => void;
   onStop: () => void;
   onDelete: () => void;
-  onAddManualTime: (hours: number) => void;
+  onAddManualTime: (hours: number, date?: Date) => void;
 }
 
 export const GoalCard: React.FC<GoalCardProps> = ({ goal, sessions, onStart, onStop, onDelete, onAddManualTime }) => {
   const [showManualEntry, setShowManualEntry] = useState(false);
   const [manualHours, setManualHours] = useState('');
+  const [manualDate, setManualDate] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showChart, setShowChart] = useState(false);
   const currentSessionTime = useTimer(goal.isActive, goal.startTime);
   const totalTime = goal.totalTimeSpent + currentSessionTime;
   const totalHoursSpent = totalTime / (1000 * 60 * 60);
@@ -27,8 +30,10 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, sessions, onStart, onS
     e.preventDefault();
     const hours = parseFloat(manualHours);
     if (!isNaN(hours) && hours > 0) {
-      onAddManualTime(hours);
+      const selectedDate = manualDate ? new Date(manualDate) : undefined;
+      onAddManualTime(hours, selectedDate);
       setManualHours('');
+      setManualDate('');
       setShowManualEntry(false);
     }
   };
@@ -82,6 +87,9 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, sessions, onStart, onS
         <button onClick={() => setShowManualEntry(!showManualEntry)} className="outline">
           {showManualEntry ? 'Cancel' : 'Add Time'}
         </button>
+        <button onClick={() => setShowChart(!showChart)} className="outline">
+          {showChart ? 'Hide Chart' : 'Show Progress'}
+        </button>
         <button onClick={() => setShowDeleteConfirm(true)} className="outline">
           Delete
         </button>
@@ -99,11 +107,28 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, sessions, onStart, onS
               step="0.1"
               required
             />
+            <input
+              type="date"
+              placeholder="Date (optional)"
+              value={manualDate}
+              onChange={(e) => setManualDate(e.target.value)}
+              max={new Date().toISOString().split('T')[0]}
+            />
             <button type="submit" disabled={!manualHours || parseFloat(manualHours) <= 0}>
               Add Time
             </button>
           </div>
         </form>
+      )}
+
+      {showChart && (
+        <div className="chart-container">
+          <GoalProgressChart
+            sessions={sessions.filter(s => s.goalId === goal.id)}
+            goalTitle={goal.title}
+            totalHours={goal.totalHours}
+          />
+        </div>
       )}
 
       {showDeleteConfirm && (
