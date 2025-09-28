@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Goal, TimeSession } from '../types';
 import { formatDuration, calculateEstimatedCompletion } from '../utils/time';
 import { useTimer } from '../hooks/useTimer';
-import { GoalProgressChart } from './GoalProgressChart';
+import { ProgressModal } from './ProgressModal';
+import { AddTimeModal } from './AddTimeModal';
 
 interface GoalCardProps {
   goal: Goal;
@@ -14,11 +15,9 @@ interface GoalCardProps {
 }
 
 export const GoalCard: React.FC<GoalCardProps> = ({ goal, sessions, onStart, onStop, onDelete, onAddManualTime }) => {
-  const [showManualEntry, setShowManualEntry] = useState(false);
-  const [manualHours, setManualHours] = useState('');
-  const [manualDate, setManualDate] = useState('');
+  const [showAddTimeModal, setShowAddTimeModal] = useState(false);
+  const [showProgressModal, setShowProgressModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showChart, setShowChart] = useState(false);
   const currentSessionTime = useTimer(goal.isActive, goal.startTime);
   const totalTime = goal.totalTimeSpent + currentSessionTime;
   const totalHoursSpent = totalTime / (1000 * 60 * 60);
@@ -26,16 +25,8 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, sessions, onStart, onS
   const progressPercentage = Math.min(100, (totalHoursSpent / goal.totalHours) * 100);
   const estimatedCompletion = calculateEstimatedCompletion(goal, sessions);
 
-  const handleManualTimeSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const hours = parseFloat(manualHours);
-    if (!isNaN(hours) && hours > 0) {
-      const selectedDate = manualDate ? new Date(manualDate) : undefined;
-      onAddManualTime(hours, selectedDate);
-      setManualHours('');
-      setManualDate('');
-      setShowManualEntry(false);
-    }
+  const handleAddTime = (hours: number, date?: Date) => {
+    onAddManualTime(hours, date);
   };
 
   const handleDeleteConfirm = () => {
@@ -84,52 +75,31 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, sessions, onStart, onS
             Start Timer
           </button>
         )}
-        <button onClick={() => setShowManualEntry(!showManualEntry)} className="outline">
-          {showManualEntry ? 'Cancel' : 'Add Time'}
+        <button onClick={() => setShowAddTimeModal(true)} className="outline">
+          Add Time
         </button>
-        <button onClick={() => setShowChart(!showChart)} className="outline">
-          {showChart ? 'Hide Chart' : 'Show Progress'}
+        <button onClick={() => setShowProgressModal(true)} className="outline">
+          Show Progress
         </button>
         <button onClick={() => setShowDeleteConfirm(true)} className="outline">
           Delete
         </button>
       </div>
 
-      {showManualEntry && (
-        <form onSubmit={handleManualTimeSubmit} className="manual-time-form">
-          <div>
-            <input
-              type="number"
-              placeholder="Hours to add"
-              value={manualHours}
-              onChange={(e) => setManualHours(e.target.value)}
-              min="0.1"
-              step="0.1"
-              required
-            />
-            <input
-              type="date"
-              placeholder="Date (optional)"
-              value={manualDate}
-              onChange={(e) => setManualDate(e.target.value)}
-              max={new Date().toISOString().split('T')[0]}
-            />
-            <button type="submit" disabled={!manualHours || parseFloat(manualHours) <= 0}>
-              Add Time
-            </button>
-          </div>
-        </form>
-      )}
+      <AddTimeModal
+        isOpen={showAddTimeModal}
+        onClose={() => setShowAddTimeModal(false)}
+        goalTitle={goal.title}
+        onAddTime={handleAddTime}
+      />
 
-      {showChart && (
-        <div className="chart-container">
-          <GoalProgressChart
-            sessions={sessions.filter(s => s.goalId === goal.id)}
-            goalTitle={goal.title}
-            totalHours={goal.totalHours}
-          />
-        </div>
-      )}
+      <ProgressModal
+        isOpen={showProgressModal}
+        onClose={() => setShowProgressModal(false)}
+        goal={goal}
+        sessions={sessions}
+        currentSessionTime={currentSessionTime}
+      />
 
       {showDeleteConfirm && (
         <div className="delete-confirmation">

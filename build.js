@@ -58,6 +58,26 @@ const htmlTemplate = `<!DOCTYPE html>
             font-size: 0.8rem;
             margin: 0.2rem 0;
         }
+        .progress-modal {
+            max-width: 80vw;
+            width: 80vw;
+        }
+        .progress-modal article {
+            max-width: none;
+            width: 100%;
+        }
+        .chart-section {
+            min-height: 300px;
+            margin-top: 1rem;
+            width: 100%;
+        }
+        .progress-details {
+            width: 100%;
+        }
+        .progress-modal .chart-section > div {
+            width: 100% !important;
+            min-width: 600px;
+        }
     </style>
 </head>
 <body>
