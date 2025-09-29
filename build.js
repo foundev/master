@@ -114,6 +114,11 @@ async function build() {
         const jsCode = result.outputFiles[0].text;
         const finalHtml = htmlTemplate.replace('__BUNDLE__', jsCode);
 
+        // Ensure dist directory exists
+        if (!fs.existsSync('dist')) {
+            fs.mkdirSync('dist', { recursive: true });
+        }
+
         fs.writeFileSync('dist/index.html', finalHtml);
         console.log('Build completed! Output: dist/index.html');
     } catch (error) {
@@ -153,6 +158,12 @@ if (isWatch) {
                         if (result.errors.length === 0) {
                             const jsCode = result.outputFiles[0].text;
                             const finalHtml = htmlTemplate.replace('__BUNDLE__', jsCode);
+
+                            // Ensure dist directory exists
+                            if (!fs.existsSync('dist')) {
+                                fs.mkdirSync('dist', { recursive: true });
+                            }
+
                             fs.writeFileSync('dist/index.html', finalHtml);
                             console.log('Rebuilt at', new Date().toLocaleTimeString());
                         } else {
