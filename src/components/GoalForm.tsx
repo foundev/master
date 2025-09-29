@@ -207,7 +207,6 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onSubmit }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h3>Add New Goal</h3>
       <div style={{ position: 'relative' }}>
         <input
           ref={inputRef}

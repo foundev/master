@@ -75,13 +75,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
     <dialog ref={dialogRef} onClick={handleBackdropClick} className={className}>
       <article>
         <header>
-          <button
-            aria-label="Close"
-            rel="prev"
-            onClick={onClose}
-            type="button"
-          ></button>
-          <p><strong>{title}</strong></p>
+          {title}
         </header>
         {children}
       </article>

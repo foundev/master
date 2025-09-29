@@ -152,7 +152,7 @@ describe('Integration: Manual time with custom dates', () => {
 
     // Start a timer
     act(() => {
-      fireEvent.click(screen.getByText('Start Timer'));
+      fireEvent.click(screen.getByTitle('Start Timer'));
     });
 
     // Simulate some time passing (1 hour)
@@ -162,7 +162,7 @@ describe('Integration: Manual time with custom dates', () => {
 
     // Stop the timer
     act(() => {
-      fireEvent.click(screen.getByText('Stop Timer'));
+      fireEvent.click(screen.getByTitle('Stop Timer'));
     });
 
     // Add manual time for a past date

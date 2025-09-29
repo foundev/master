@@ -21,8 +21,8 @@ export const GoalList: React.FC<GoalListProps> = ({
 }) => {
   if (goals.length === 0) {
     return (
-      <div>
-        <p>No goals yet. Add your first goal above!</p>
+      <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--muted-color)' }}>
+        <p>No goals yet. Click the "Add New Goal" button to get started!</p>
       </div>
     );
   }

@@ -67,22 +67,22 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, sessions, onStart, onS
 
       <div className="controls">
         {goal.isActive ? (
-          <button onClick={onStop} className="secondary">
-            Stop Timer
+          <button onClick={onStop} className="secondary" title="Stop Timer">
+            ⏹️
           </button>
         ) : (
-          <button onClick={onStart}>
-            Start Timer
+          <button onClick={onStart} title="Start Timer">
+            ▶️
           </button>
         )}
-        <button id="add-time-button" onClick={() => setShowAddTimeModal(true)} className="outline">
-          Add Time
+        <button id="add-time-button" onClick={() => setShowAddTimeModal(true)} className="outline" title="Add Time">
+          ➕
         </button>
-        <button onClick={() => setShowProgressModal(true)} className="outline">
-          Show Progress
+        <button onClick={() => setShowProgressModal(true)} className="outline" title="Show Progress">
+          📊
         </button>
-        <button onClick={() => setShowDeleteConfirm(true)} className="outline">
-          Delete
+        <button onClick={() => setShowDeleteConfirm(true)} className="outline" title="Delete">
+          🗑️
         </button>
       </div>
 

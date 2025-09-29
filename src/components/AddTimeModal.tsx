@@ -61,66 +61,68 @@ export const AddTimeModal: React.FC<AddTimeModalProps> = ({
       onClose={handleClose}
       title={`Add Time: ${goalTitle}`}
     >
-      <form onSubmit={handleSubmit}>
-        {validationError && (
-          <>
-            <style>
-              {`
-                @keyframes shake {
-                  0%, 100% { transform: translateX(0); }
-                  25% { transform: translateX(-5px); }
-                  75% { transform: translateX(5px); }
-                }
-              `}
-            </style>
-            <div style={{
-              color: '#d32f2f',
-              marginBottom: '1rem',
-              padding: '1rem',
-              border: '2px solid #f44336',
-              borderRadius: '8px',
-              backgroundColor: '#ffebee',
-              fontSize: '0.95rem',
-              fontWeight: '500',
-              boxShadow: '0 2px 4px rgba(244, 67, 54, 0.1)',
-              animation: 'shake 0.5s ease-in-out'
-            }}>
-              <strong>⚠️ Daily Time Limit Exceeded</strong><br />
-              {validationError}
-            </div>
-          </>
-        )}
+      <form id="add-time-form" onSubmit={handleSubmit}>
+          {validationError && (
+            <>
+              <style>
+                {`
+                  @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-5px); }
+                    75% { transform: translateX(5px); }
+                  }
+                `}
+              </style>
+              <div style={{
+                color: '#d32f2f',
+                marginBottom: '1rem',
+                padding: '1rem',
+                border: '2px solid #f44336',
+                borderRadius: '8px',
+                backgroundColor: '#ffebee',
+                fontSize: '0.95rem',
+                fontWeight: '500',
+                boxShadow: '0 2px 4px rgba(244, 67, 54, 0.1)',
+                animation: 'shake 0.5s ease-in-out'
+              }}>
+                <strong>⚠️ Daily Time Limit Exceeded</strong><br />
+                {validationError}
+              </div>
+            </>
+          )}
 
-        <div>
-          <label htmlFor="hours">Hours to add:</label>
-          <input
-            id="hours"
-            type="number"
-            placeholder="Hours to add"
-            value={manualHours}
-            onChange={(e) => setManualHours(e.target.value)}
-            min="0.1"
-            max="24"
-            step="0.1"
-            required
-            autoFocus
-          />
-        </div>
+          <label htmlFor="hours">
+            Hours to add:
+            <input
+              id="hours"
+              type="number"
+              placeholder="Hours to add"
+              value={manualHours}
+              onChange={(e) => setManualHours(e.target.value)}
+              min="0.1"
+              max="24"
+              step="0.1"
+              required
+              autoFocus
+            />
+          </label>
 
-        <div>
-          <label htmlFor="date">Date (optional):</label>
-          <input
-            id="date"
-            type="date"
-            placeholder="Date (optional)"
-            value={manualDate}
-            onChange={(e) => setManualDate(e.target.value)}
-            max={new Date().toISOString().split('T')[0]}
-          />
-          <small>Leave empty to use today's date</small>
-        </div>
+          <label htmlFor="date">
+            Date (optional):
+            <input
+              id="date"
+              type="date"
+              placeholder="Date (optional)"
+              value={manualDate}
+              onChange={(e) => setManualDate(e.target.value)}
+              max={new Date().toISOString().split('T')[0]}
+            />
+            <small>Leave empty to use today's date</small>
+          </label>
+      </form>
 
-        <footer>
+      <footer>
+        <div className="grid">
           <button
             type="button"
             onClick={handleClose}
@@ -131,12 +133,13 @@ export const AddTimeModal: React.FC<AddTimeModalProps> = ({
           <button
             id="submit-time-button"
             type="submit"
+            form="add-time-form"
             disabled={!manualHours || parseFloat(manualHours) <= 0}
           >
             Add Time
           </button>
-        </footer>
-      </form>
+        </div>
+      </footer>
     </Modal>
   );
 };

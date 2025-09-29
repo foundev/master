@@ -78,16 +78,16 @@ describe('GoalCard', () => {
   it('should show start button when goal is not active', () => {
     render(<GoalCard {...mockProps} />);
 
-    expect(screen.getByText('Start Timer')).toBeInTheDocument();
-    expect(screen.queryByText('Stop Timer')).not.toBeInTheDocument();
+    expect(screen.getByTitle('Start Timer')).toBeInTheDocument();
+    expect(screen.queryByTitle('Stop Timer')).not.toBeInTheDocument();
   });
 
   it('should show stop button when goal is active', () => {
     const activeGoal = { ...mockGoal, isActive: true };
     render(<GoalCard {...mockProps} goal={activeGoal} />);
 
-    expect(screen.getByText('Stop Timer')).toBeInTheDocument();
-    expect(screen.queryByText('Start Timer')).not.toBeInTheDocument();
+    expect(screen.getByTitle('Stop Timer')).toBeInTheDocument();
+    expect(screen.queryByTitle('Start Timer')).not.toBeInTheDocument();
   });
 
   it('should display current session timer when active', () => {
@@ -107,7 +107,7 @@ describe('GoalCard', () => {
   it('should call onStart when start button is clicked', () => {
     render(<GoalCard {...mockProps} />);
 
-    fireEvent.click(screen.getByText('Start Timer'));
+    fireEvent.click(screen.getByTitle('Start Timer'));
 
     expect(mockProps.onStart).toHaveBeenCalledTimes(1);
   });
@@ -116,7 +116,7 @@ describe('GoalCard', () => {
     const activeGoal = { ...mockGoal, isActive: true };
     render(<GoalCard {...mockProps} goal={activeGoal} />);
 
-    fireEvent.click(screen.getByText('Stop Timer'));
+    fireEvent.click(screen.getByTitle('Stop Timer'));
 
     expect(mockProps.onStop).toHaveBeenCalledTimes(1);
   });
@@ -125,7 +125,7 @@ describe('GoalCard', () => {
     render(<GoalCard {...mockProps} />);
 
     // Click delete button to show confirmation
-    fireEvent.click(screen.getByText('Delete'));
+    fireEvent.click(screen.getByTitle('Delete'));
 
     // Confirm the deletion
     fireEvent.click(screen.getByText('Yes, Delete Goal'));

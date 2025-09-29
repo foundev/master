@@ -31,11 +31,39 @@ const htmlTemplate = `<!DOCTYPE html>
         }
         .controls {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.75rem;
             margin-top: 1rem;
+            justify-content: flex-start;
         }
         .controls button {
-            flex: 1;
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            font-size: 1.4rem;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            color: var(--muted-color);
+        }
+        .controls button:hover {
+            background-color: var(--muted-border-color);
+            color: var(--color);
+            transform: scale(1.1);
+        }
+        .controls button:active {
+            transform: scale(0.95);
+        }
+        .controls button:not(.secondary) {
+            color: var(--primary);
+        }
+        .controls button:not(.secondary):hover {
+            background-color: var(--primary);
+            color: white;
         }
         .progress-info {
             margin: 1rem 0;

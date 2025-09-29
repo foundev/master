@@ -39,8 +39,8 @@ describe('App Integration Tests', () => {
 
     expect(screen.getByText('Goal Tracker')).toBeInTheDocument();
     expect(screen.getByText('Track time spent working towards your goals')).toBeInTheDocument();
-    expect(screen.getByText('Add New Goal')).toBeInTheDocument();
-    expect(screen.getByText('No goals yet. Add your first goal above!')).toBeInTheDocument();
+    expect(screen.getByLabelText('Add New Goal')).toBeInTheDocument();
+    expect(screen.getByText('No goals yet. Click the "Add New Goal" button to get started!')).toBeInTheDocument();
   });
 
   it('should load and display existing goals from storage', () => {
@@ -74,12 +74,20 @@ describe('App Integration Tests', () => {
     expect(screen.getByText('Study React fundamentals')).toBeInTheDocument();
     expect(screen.getByText('Build Portfolio')).toBeInTheDocument();
     expect(screen.getByText('Create a personal portfolio website')).toBeInTheDocument();
-    expect(screen.queryByText('No goals yet. Add your first goal above!')).not.toBeInTheDocument();
+    expect(screen.queryByText('No goals yet. Click the "Add New Goal" button to get started!')).not.toBeInTheDocument();
   });
 
-  it('should create a new goal through the form', async () => {
+  it('should create a new goal through the modal form', async () => {
     const user = userEvent.setup();
     render(<App />);
+
+    // Open the modal
+    await user.click(screen.getByLabelText('Add New Goal'));
+
+    // Wait for modal to appear
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
 
     // Fill out the form
     await user.type(screen.getByPlaceholderText('Goal title'), 'Test Goal');
@@ -92,10 +100,10 @@ describe('App Integration Tests', () => {
     // Verify the storage was called to save the goal
     expect(mockStorage.saveGoals).toHaveBeenCalled();
 
-    // Verify the form was cleared
-    expect(screen.getByPlaceholderText('Goal title')).toHaveValue('');
-    expect(screen.getByPlaceholderText('Goal description (optional)')).toHaveValue('');
-    expect(screen.getByPlaceholderText('Total hours required').value).toBe('');
+    // Verify the modal is closed (form should not be visible)
+    await waitFor(() => {
+      expect(screen.queryByPlaceholderText('Goal title')).not.toBeInTheDocument();
+    });
   });
 
   it('should handle goal deletion', async () => {
@@ -119,7 +127,7 @@ describe('App Integration Tests', () => {
     expect(screen.getByText('Goal to Delete')).toBeInTheDocument();
 
     // Click delete button to show confirmation
-    await user.click(screen.getByText('Delete'));
+    await user.click(screen.getByTitle('Delete'));
 
     // Confirm the deletion
     await user.click(screen.getByText('Yes, Delete Goal'));
@@ -147,7 +155,7 @@ describe('App Integration Tests', () => {
     render(<App />);
 
     // Start timer
-    await user.click(screen.getByText('Start Timer'));
+    await user.click(screen.getByTitle('Start Timer'));
     expect(mockStorage.saveGoals).toHaveBeenCalled();
 
     // Note: The actual timer functionality and stop button appearance
@@ -179,7 +187,11 @@ describe('App Integration Tests', () => {
     // Clear previous calls
     mockStorage.getSessions.mockClear();
 
-    // Add a new goal (which should trigger session reload)
+    // Open modal and add a new goal (which should trigger session reload)
+    await user.click(screen.getByLabelText('Add New Goal'));
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
     await user.type(screen.getByPlaceholderText('Goal title'), 'New Goal');
     await user.type(screen.getByPlaceholderText('Total hours required'), '5');
     await user.click(screen.getByText('Add Goal'));
@@ -188,9 +200,15 @@ describe('App Integration Tests', () => {
     expect(mockStorage.getSessions).toHaveBeenCalled();
   });
 
-  it('should display form validation states correctly', async () => {
+  it('should display form validation states correctly in modal', async () => {
     const user = userEvent.setup();
     render(<App />);
+
+    // Open modal
+    await user.click(screen.getByLabelText('Add New Goal'));
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
 
     const submitButton = screen.getByText('Add Goal');
 
@@ -241,5 +259,51 @@ describe('App Integration Tests', () => {
     // Verify data flows correctly to child components
     expect(screen.getByText('Test Goal')).toBeInTheDocument();
     expect(screen.getByText('Test Description')).toBeInTheDocument();
+  });
+
+  it('should open and close the add goal modal', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    // Modal should not be visible initially
+    expect(screen.queryByText('Add New Goal')).not.toBeInTheDocument();
+
+    // Click button to open modal
+    await user.click(screen.getByLabelText('Add New Goal'));
+
+    // Modal should be visible
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Goal title')).toBeInTheDocument();
+    });
+
+    // Close modal by clicking cancel button
+    await user.click(screen.getByText('Cancel'));
+
+    // Modal should be closed
+    await waitFor(() => {
+      expect(screen.queryByPlaceholderText('Goal title')).not.toBeInTheDocument();
+    });
+  });
+
+  it('should close modal after successful goal creation', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    // Open modal
+    await user.click(screen.getByLabelText('Add New Goal'));
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+
+    // Fill and submit form
+    await user.type(screen.getByPlaceholderText('Goal title'), 'Test Goal');
+    await user.type(screen.getByPlaceholderText('Total hours required'), '10');
+    await user.click(screen.getByText('Add Goal'));
+
+    // Modal should close automatically
+    await waitFor(() => {
+      expect(screen.queryByPlaceholderText('Goal title')).not.toBeInTheDocument();
+    });
   });
 });
